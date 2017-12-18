@@ -11,6 +11,7 @@ class ClientList extends BaseComponent {
     this.createClient = this.createClient.bind(this)
     this.showClient = this.showClient.bind(this)
     this.editorClient = this.editorClient.bind(this)
+    this.delClient = this.delClient.bind(this)
   }
   async createClient (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -52,10 +53,10 @@ class ClientList extends BaseComponent {
         }
         const client_id = await this.getId('client_id')
         const newClient = {
-          name: name,
+          name,
           age: new Date().getFullYear() - parseInt(idCard.slice(6,10)),
-          idCard: idCard,
-          phone: phone,
+          idCard,
+          phone,
           id: client_id,
           gender: (idCard.slice(-2,-1)%2 ? 1 : 0),
           create_time: dtime().format('YYYY-MM-DD HH:mm')
@@ -78,6 +79,22 @@ class ClientList extends BaseComponent {
         })
       }
     })
+  }
+  async delClient (req, res, next) {
+    const client_id = req.params.client_id
+    if (!this.verifyLogin(req, res)) return
+    const client = await clientListModel.findOneAndRemove({id: client_id})
+    if (client) {
+      res.send({
+        status: 1,
+        message: 'ok'
+      })
+    } else {
+      res.send({
+        status: 0,
+        message: '删除失败'
+      })
+    }
   }
   async editorClient (req, res, next) {
     const client_id = req.params.client_id
@@ -108,12 +125,18 @@ class ClientList extends BaseComponent {
 				})
 				return
 			}
-      console.log(client_id, name, phone, idCard)
-      await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard}})
-      res.send({
-        status: 1,
-        message: 'ok'
-      })
+      const clientInfo = await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard}})
+      if (clientInfo) {
+        res.send({
+          status: 1,
+          message: 'ok'
+        })
+      } else {
+        res.send({
+          status: 0,
+          message: '修改失败'
+        })
+      }
     })
   }
   async showClient (req, res, next) {

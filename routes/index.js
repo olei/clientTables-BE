@@ -10,4 +10,5 @@ export default app => {
   app.post('/createClient', clientList.createClient)
   app.get('/clientList', clientList.showClient)
   app.put('/clients/:client_id', clientList.editorClient)
+  app.delete('/client/:client_id', clientList.delClient)
 }
