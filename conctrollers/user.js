@@ -11,6 +11,7 @@ class UserCtrl extends BaseComponent {
   constructor () {
     super()
 		this.register = this.register.bind(this)
+		this.singout = this.singout.bind(this)
   }
   async onLogin (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -19,13 +20,6 @@ class UserCtrl extends BaseComponent {
 				res.send({
 					status: 0,
 					message: '表单信息错误'
-				})
-				return
-			}
-			if (req.session.admin_id) {
-				res.send({
-					status: 0,
-					message: '已经登录'
 				})
 				return
 			}
@@ -59,7 +53,14 @@ class UserCtrl extends BaseComponent {
           message: '该用户已存在，密码输入错误'
         })
         return
-      }
+			}
+			if (req.session.admin_id && req.session.admin_id === admin.id) {
+				res.send({
+					status: 0,
+					message: '已经登录'
+				})
+				return
+			}
       req.session.admin_id = admin.id
       res.send({
         status: 1,
@@ -127,13 +128,7 @@ class UserCtrl extends BaseComponent {
     })
   }
   async singout (req, res, next) {
-		if (!req.session.admin_id) {
-			res.send({
-				status: 0,
-				success: '您未登录'
-			})
-			return
-		}
+		if (!this.verifyLogin(req, res)) return
 		try {
 			delete req.session.admin_id
 			res.send({

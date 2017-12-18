@@ -20,4 +20,15 @@ export default class BaseController {
 			throw new Error(err)
 		}
 	}
+	verifyLogin (req, res) {
+    const admin_id = req.session.admin_id
+    if (!admin_id) {
+      res.send({
+        status: 0,
+        message: '未登录'
+      })
+      return false
+    }
+    return true
+  }
 }

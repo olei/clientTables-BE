@@ -9,6 +9,8 @@ class ClientList extends BaseComponent {
   constructor () {
     super()
     this.createClient = this.createClient.bind(this)
+    this.showClient = this.showClient.bind(this)
+    this.editorClient = this.editorClient.bind(this)
   }
   async createClient (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -20,17 +22,28 @@ class ClientList extends BaseComponent {
 				})
 				return
       }
-      if (!req.session.admin_id) {
+      if (!this.verifyLogin(req, res)) return
+      const {name, phone, idCard} = fields
+      try {
+				if (!name) {
+					throw new Error('客户姓名参数错误')
+				} else if (!phone) {
+					throw new Error('电话参数错误')
+				} else if (!idCard) {
+          throw new Error('身份证参数错误')
+        }
+			} catch (err) {
+				console.log(err.message, err)
 				res.send({
 					status: 0,
-					message: '未登录'
+					message: err.message,
 				})
 				return
-      }
+			}
       try {
-        const {name, phone, idCard} = fields
-        const client = await clientListModel.findOne({name, phone})
-        if (client && client.name.toString() === name.toString() && client.phone.toString() === phone.toString()) {
+        const clientCard = await clientListModel.findOne({idCard})
+        const clientPhone = await clientListModel.findOne({phone})
+        if (clientCard || clientPhone) {
           res.send({
             status: 0,
             message: '客户已存在'
@@ -66,23 +79,56 @@ class ClientList extends BaseComponent {
       }
     })
   }
+  async editorClient (req, res, next) {
+    const client_id = req.params.client_id
+    const form = new formidable.IncomingForm()
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+				res.send({
+					status: 0,
+					message: '表单信息错误'
+				})
+				return
+      }
+      if (!this.verifyLogin(req, res)) return
+      const {name, phone, idCard} = fields
+      try {
+				if (!name) {
+					throw new Error('客户姓名参数错误')
+				} else if (!phone) {
+					throw new Error('电话参数错误')
+				} else if (!idCard) {
+          throw new Error('身份证参数错误')
+        }
+			} catch (err) {
+				console.log(err.message, err)
+				res.send({
+					status: 0,
+					message: err.message,
+				})
+				return
+			}
+      console.log(client_id, name, phone, idCard)
+      await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard}})
+      res.send({
+        status: 1,
+        message: 'ok'
+      })
+    })
+  }
   async showClient (req, res, next) {
     const admin_id = req.session.admin_id
-    if (!admin_id) {
-      res.send({
-        status: 0,
-        message: '未登录'
-      })
-      return
-    }
+    if (!this.verifyLogin(req, res)) return
     const query = req.query
+    const limit = parseInt(query.limit) || 5
+    const offset = parseInt(query.offset) || 0
     const userInfo = await user.findOne({id: admin_id})
     const newList = userInfo.clientList
-    const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0})
-    console.log(data)
+    const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
     res.send({
       status: 1,
-      message: '0k',
+      limit,
+      offset,
       objects: data
     })
   }

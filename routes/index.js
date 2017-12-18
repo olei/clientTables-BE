@@ -9,4 +9,5 @@ export default app => {
   app.post('/register', user.register)
   app.post('/createClient', clientList.createClient)
   app.get('/clientList', clientList.showClient)
+  app.put('/clients/:client_id', clientList.editorClient)
 }
