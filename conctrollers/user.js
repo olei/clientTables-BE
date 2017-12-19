@@ -12,7 +12,16 @@ class UserCtrl extends BaseComponent {
     super()
 		this.register = this.register.bind(this)
 		this.singout = this.singout.bind(this)
-  }
+		this.vLogin = this.vLogin.bind(this)
+	}
+	vLogin (req, res, next) {
+		if (this.verifyLogin(req, res)) {
+			res.send({
+				status: 1,
+				message: '已登录'
+			})
+		}
+	}
   async onLogin (req, res, next) {
     const form = new formidable.IncomingForm()
     form.parse(req, async (err, fields, files) => {
@@ -38,7 +47,8 @@ class UserCtrl extends BaseComponent {
 				})
 				return
 			}
-      const mdPassword = md5(password)
+			const mdPassword = md5(password)
+			console.log(userName, password)
       const admin = await user.findOne({uname: userName, password: mdPassword})
       if (!admin) {
         res.send({

@@ -4,6 +4,7 @@ import clientList from '../conctrollers/clientList'
 
 export default app => {
   app.get('/', index)
+  app.get('/vLogin', user.vLogin)
   app.post('/onLogin', user.onLogin)
   app.get('/singout', user.singout)
   app.post('/register', user.register)
