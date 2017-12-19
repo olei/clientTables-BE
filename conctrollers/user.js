@@ -15,12 +15,16 @@ class UserCtrl extends BaseComponent {
 		this.vLogin = this.vLogin.bind(this)
 	}
 	vLogin (req, res, next) {
-		if (this.verifyLogin(req, res)) {
-			res.send({
-				status: 1,
-				message: '已登录'
-			})
-		}
+		res.send({
+			status: 1,
+			message: '登录'
+		})
+		// if (this.verifyLogin(req, res)) {
+		// 	res.send({
+		// 		status: 1,
+		// 		message: '已登录'
+		// 	})
+		// }
 	}
   async onLogin (req, res, next) {
     const form = new formidable.IncomingForm()
