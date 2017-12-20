@@ -195,11 +195,11 @@ class ClientList extends BaseComponent {
     })
   }
   getStatus (req, res) {
-    // const admin_id = 1 // 开发环境使用常量
+    const admin_id = 3 // 开发环境使用常量
 
     // 生产环境使用
-    const admin_id = req.session.admin_id
-    if (!this.verifyLogin(req, res)) return false
+    // const admin_id = req.session.admin_id
+    // if (!this.verifyLogin(req, res)) return false
     const query = req.query
     const limit = parseInt(query.limit) || 5
     const offset = parseInt(query.offset) || 0
