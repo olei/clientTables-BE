@@ -12,6 +12,7 @@ class ClientList extends BaseComponent {
     this.showClient = this.showClient.bind(this)
     this.editorClient = this.editorClient.bind(this)
     this.delClient = this.delClient.bind(this)
+    this.searchClient = this.searchClient.bind(this)
   }
   async createClient (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -140,12 +141,17 @@ class ClientList extends BaseComponent {
     })
   }
   async showClient (req, res, next) {
-    const admin_id = req.session.admin_id
-    if (!this.verifyLogin(req, res)) return
-    const query = req.query
-    const limit = parseInt(query.limit) || 5
-    const offset = parseInt(query.offset) || 0
+    const { limit, offset, admin_id } = this.getStatus(req, res)
     const userInfo = await user.findOne({id: admin_id})
+    if (!userInfo) {
+      res.send({
+        status: 1,
+        limit,
+        offset,
+        objects: []
+      })
+      return
+    }
     const newList = userInfo.clientList
     const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
     res.send({
@@ -154,6 +160,50 @@ class ClientList extends BaseComponent {
       offset,
       objects: data
     })
+  }
+  async searchClient (req, res, next) {
+    const { limit, offset, admin_id, query } = this.getStatus(req, res)
+    const userInfo = await user.findOne({id: admin_id})
+    if (!userInfo || !query.key) {
+      res.send({
+        status: 1,
+        limit,
+        offset,
+        objects: []
+      })
+      return
+    }
+    const newList = userInfo.clientList
+    const num = parseInt(query.key)
+    let key
+    if (num) {
+      if (num.toString().length == 11) key = 'phone'
+      else if (num.toString().length >= 16) key = 'idCard'
+      else key = 'name'
+    } else {
+      key = 'name'
+    }
+    const opt = {}
+    opt.$or = newList.map(i => ({id: i}))
+    opt[key] = query.key
+    const data = await clientListModel.find(opt, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
+    res.send({
+      status: 1,
+      limit,
+      offset,
+      objects: data
+    })
+  }
+  getStatus (req, res) {
+    // const admin_id = 1 // 开发环境使用常量
+
+    // 生产环境使用
+    const admin_id = req.session.admin_id
+    if (!this.verifyLogin(req, res)) return false
+    const query = req.query
+    const limit = parseInt(query.limit) || 5
+    const offset = parseInt(query.offset) || 0
+    return { limit, offset, admin_id, query }
   }
 }
 

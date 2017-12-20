@@ -11,7 +11,7 @@ import config from './config'
 const app = express()
 
 app.all('*', (req, res, next) => {
-	res.header("Access-Control-Allow-Origin", 'http://localhost:8080')
+	res.header("Access-Control-Allow-Origin", 'http://10.30.30.16:8080')
 	res.header("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 	res.header("Access-Control-Allow-Methods", "PUT,POST,GET,DELETE,OPTIONS")
   res.header("Access-Control-Allow-Credentials", true) //可以带cookies

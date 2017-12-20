@@ -15,10 +15,12 @@ class UserCtrl extends BaseComponent {
 		this.vLogin = this.vLogin.bind(this)
 	}
 	vLogin (req, res, next) {
+		// 开发环境使用
 		res.send({
 			status: 1,
 			message: '登录'
 		})
+		// 生产环境使用
 		// if (this.verifyLogin(req, res)) {
 		// 	res.send({
 		// 		status: 1,

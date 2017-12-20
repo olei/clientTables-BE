@@ -12,4 +12,5 @@ export default app => {
   app.get('/clientList', clientList.showClient)
   app.put('/clients/:client_id', clientList.editorClient)
   app.delete('/client/:client_id', clientList.delClient)
+  app.get('/search', clientList.searchClient)
 }
