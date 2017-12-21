@@ -9,7 +9,8 @@ export default {
 		cookie: {
 			httpOnly: true,
       secure: false,
-      maxAge: 30 * 60 * 1000
+			maxAge: 30 * 60 * 1000,
+			// domain: "localhost"
 		}
 	}
 }
