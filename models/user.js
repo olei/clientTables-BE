@@ -11,7 +11,8 @@ const userSchema = new Schema({
     password: String,
     id: Number,
     clientList: Array,
-    create_time: String
+    create_time: String,
+    rights: Number
 })
 
 // userSchema.index({id: 1})

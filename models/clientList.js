@@ -13,7 +13,9 @@ const clientList = new Schema({
   phone: String,
   id: Number,
   gender: Number,
-  create_time: String
+  create_time: String,
+  tIdCard: String,
+  tPhone: String
 })
 
 export default mongoose.model('clientList', clientList)

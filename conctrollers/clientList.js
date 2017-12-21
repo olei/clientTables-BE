@@ -57,7 +57,9 @@ class ClientList extends BaseComponent {
           name,
           age: new Date().getFullYear() - parseInt(idCard.slice(6,10)),
           idCard,
+          tIdCard: `${idCard.slice(0, -4)}****`,
           phone,
+          tPhone: `${phone.slice(0, 3)}****${phone.slice(-4)}`,
           id: client_id,
           gender: (idCard.slice(-2,-1)%2 ? 1 : 0),
           create_time: dtime().format('YYYY-MM-DD HH:mm')
@@ -84,11 +86,23 @@ class ClientList extends BaseComponent {
   async delClient (req, res, next) {
     const client_id = req.params.client_id
     if (!this.verifyLogin(req, res)) return
+    const admin_id = req.session.admin_id
+    const userInfo = await user.findOne({id: admin_id}, {_id: 0, rights: 1, clientList: 1})
+    if (userInfo.rights > 1) {
+      res.send({
+        status: 0,
+        message: '没有权限删除信息'
+      })
+      return
+    }
     const client = await clientListModel.findOneAndRemove({id: client_id})
     if (client) {
+      const oleList = userInfo.clientList
+      const newList = oleList.filter(i => i !== parseInt(client_id))
+      await user.findOneAndUpdate({id: req.session.admin_id}, {$set: {clientList: newList}})
       res.send({
         status: 1,
-        message: 'ok'
+        message: '删除成功'
       })
     } else {
       res.send({
@@ -109,6 +123,15 @@ class ClientList extends BaseComponent {
 				return
       }
       if (!this.verifyLogin(req, res)) return
+      const admin_id = req.session.admin_id
+      const userInfo = await user.findOne({id: admin_id}, {_id: 0, rights: 1})
+      if (userInfo.rights > 1) {
+        res.send({
+          status: 0,
+          message: '没有权限修改信息'
+        })
+        return
+      }
       const {name, phone, idCard} = fields
       try {
 				if (!name) {
@@ -125,8 +148,10 @@ class ClientList extends BaseComponent {
 					message: err.message,
 				})
 				return
-			}
-      const clientInfo = await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard}})
+      }
+      const tIdCard = `${idCard.slice(0, -4)}****`
+      const tPhone = `${phone.slice(0, 3)}****${phone.slice(-4)}`
+      const clientInfo = await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard, tIdCard, tPhone}})
       if (clientInfo) {
         res.send({
           status: 1,
@@ -152,14 +177,23 @@ class ClientList extends BaseComponent {
       })
       return
     }
-    const newList = userInfo.clientList
-    const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
-    res.send({
-      status: 1,
-      limit,
-      offset,
-      objects: data
-    })
+    try {
+      const newList = userInfo.clientList
+      const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, id: 1, create_time: 1, gender: 1, tIdCard:1, tPhone: 1, _id: 0}).limit(limit).skip(offset)
+      res.send({
+        status: 1,
+        limit,
+        offset,
+        objects: data
+      })
+    } catch (err) {
+      res.send({
+        status: 1,
+        limit,
+        offset,
+        objects: []
+      })
+    }
   }
   async searchClient (req, res, next) {
     const { limit, offset, admin_id, query } = this.getStatus(req, res)
@@ -195,11 +229,11 @@ class ClientList extends BaseComponent {
     })
   }
   getStatus (req, res) {
-    const admin_id = 3 // 开发环境使用常量
+    // const admin_id = 3 // 开发环境使用常量
 
     // 生产环境使用
-    // const admin_id = req.session.admin_id
-    // if (!this.verifyLogin(req, res)) return false
+    const admin_id = req.session.admin_id
+    if (!this.verifyLogin(req, res)) return false
     const query = req.query
     const limit = parseInt(query.limit) || 5
     const offset = parseInt(query.offset) || 0

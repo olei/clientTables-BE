@@ -16,17 +16,17 @@ class UserCtrl extends BaseComponent {
 	}
 	vLogin (req, res, next) {
 		// 开发环境使用
-		res.send({
-			status: 1,
-			message: '登录'
-		})
+		// res.send({
+		// 	status: 1,
+		// 	message: '登录'
+		// })
 		// 生产环境使用
-		// if (this.verifyLogin(req, res)) {
-		// 	res.send({
-		// 		status: 1,
-		// 		message: '已登录'
-		// 	})
-		// }
+		if (this.verifyLogin(req, res)) {
+			res.send({
+				status: 1,
+				message: '已登录'
+			})
+		}
 	}
   async onLogin (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -122,9 +122,10 @@ class UserCtrl extends BaseComponent {
 					const mdPassword = md5(password)
 					const newAdmin = {
 						uname: userName, 
-						password: mdPassword, 
+						password: mdPassword,
 						id: admin_id,
 						create_time: dtime().format('YYYY-MM-DD'),
+						rights: 2,
 						clientList: []
 					}
 					await user.create(newAdmin)

@@ -12,6 +12,7 @@ export default class BaseController {
 		}
 		try {
 			const idData = await Ids.findOne()
+			console.log(idData, '0')
 			idData[type] ++
 			await idData.save()
 			return idData[type]
