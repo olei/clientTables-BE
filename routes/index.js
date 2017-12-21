@@ -1,12 +1,14 @@
 import index from '../conctrollers/index'
 import user from '../conctrollers/user'
 import clientList from '../conctrollers/clientList'
+import captchas from '../conctrollers/captchas'
 
 export default app => {
   app.get('/', index)
   app.get('/vLogin', user.vLogin)
   app.post('/onLogin', user.onLogin)
   app.get('/singout', user.singout)
+  app.get('/captchas', captchas.getCaptchas)
   app.post('/register', user.register)
   app.post('/createClient', clientList.createClient)
   app.get('/clientList', clientList.showClient)
