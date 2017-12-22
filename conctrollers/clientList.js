@@ -14,6 +14,7 @@ class ClientList extends BaseComponent {
     this.delClient = this.delClient.bind(this)
     this.searchClient = this.searchClient.bind(this)
     this.getStatus = this.getStatus.bind(this)
+    this.getClient = this.getClient.bind(this)
   }
   async createClient (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -166,6 +167,15 @@ class ClientList extends BaseComponent {
       }
     })
   }
+  async getClient (req, res, next) {
+    const client_id = req.params.client_id
+    if (!this.verifyLogin(req, res)) return
+    const clientInfo = await clientListModel.findOne({id: client_id}, {_id: 0, name: 1, age: 1, id: 1, gender: 1, create_time: 1, tPhone: 1, tIdCard: 1})
+    res.send({
+      status: 1,
+      data: clientInfo
+    })
+  }
   async showClient (req, res, next) {
     const { limit, offset, admin_id } = this.getStatus(req, res)
     const userInfo = await user.findOne({id: admin_id})
@@ -185,6 +195,7 @@ class ClientList extends BaseComponent {
         status: 1,
         limit,
         offset,
+        total: newList.length,
         objects: data
       })
     } catch (err) {

@@ -12,6 +12,7 @@ export default app => {
   app.post('/register', user.register)
   app.post('/createClient', clientList.createClient)
   app.get('/clientList', clientList.showClient)
+  app.get('/getClient/:client_id', clientList.getClient)
   app.put('/clients/:client_id', clientList.editorClient)
   app.delete('/client/:client_id', clientList.delClient)
   app.get('/search', clientList.searchClient)
