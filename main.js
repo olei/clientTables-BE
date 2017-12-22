@@ -23,6 +23,8 @@ app.all('*', (req, res, next) => {
 	}
 })
 
+console.log(process.env.ADMIN_ID)
+
 const MongoStore = connectMongo(session)
 app.use(cookieParser())
 app.use(

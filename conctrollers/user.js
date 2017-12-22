@@ -32,6 +32,7 @@ class UserCtrl extends BaseComponent {
     const form = new formidable.IncomingForm()
     form.parse(req, async (err, fields, files) => {
       if (err) {
+				console.log(err.message, err)
 				res.send({
 					status: 0,
 					message: '表单信息错误'
@@ -54,7 +55,6 @@ class UserCtrl extends BaseComponent {
 				return
 			}
 			const mdPassword = md5(password)
-			console.log(userName, password)
       const admin = await user.findOne({uname: userName, password: mdPassword})
       if (!admin) {
         res.send({

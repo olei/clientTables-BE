@@ -22,7 +22,7 @@ export default class BaseController {
 		}
 	}
 	verifyLogin (req, res) {
-    const admin_id = req.session.admin_id
+    const admin_id = this.getSessionAdminId(req)
     if (!admin_id) {
       res.send({
         status: 0,
@@ -31,5 +31,9 @@ export default class BaseController {
       return false
     }
     return true
-  }
+	}
+	getSessionAdminId (req) {
+		if (process.env.NODE_ENV === 'development') return parseInt(process.env.ADMIN_ID)
+		return req.session.admin_id
+	}
 }

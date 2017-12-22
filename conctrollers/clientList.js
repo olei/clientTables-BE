@@ -13,6 +13,7 @@ class ClientList extends BaseComponent {
     this.editorClient = this.editorClient.bind(this)
     this.delClient = this.delClient.bind(this)
     this.searchClient = this.searchClient.bind(this)
+    this.getStatus = this.getStatus.bind(this)
   }
   async createClient (req, res, next) {
     const form = new formidable.IncomingForm()
@@ -64,11 +65,11 @@ class ClientList extends BaseComponent {
           gender: (idCard.slice(-2,-1)%2 ? 1 : 0),
           create_time: dtime().format('YYYY-MM-DD HH:mm')
         }
-        const admin_id = req.session.admin_id
+        const admin_id = this.getSessionAdminId(req) //req.session.admin_id
         const userInfo = await user.findOne({id: admin_id})
         const newList = userInfo.clientList
         newList.push(client_id)
-        await user.findOneAndUpdate({id: req.session.admin_id}, {$set: {clientList: newList}})
+        await user.findOneAndUpdate({id: admin_id}, {$set: {clientList: newList}})
         await clientListModel.create(newClient)
         res.send({
           status: 1,
@@ -86,7 +87,7 @@ class ClientList extends BaseComponent {
   async delClient (req, res, next) {
     const client_id = req.params.client_id
     if (!this.verifyLogin(req, res)) return
-    const admin_id = req.session.admin_id
+    const admin_id = this.getSessionAdminId(req) //req.session.admin_id
     const userInfo = await user.findOne({id: admin_id}, {_id: 0, rights: 1, clientList: 1})
     if (userInfo.rights > 1) {
       res.send({
@@ -99,7 +100,7 @@ class ClientList extends BaseComponent {
     if (client) {
       const oleList = userInfo.clientList
       const newList = oleList.filter(i => i !== parseInt(client_id))
-      await user.findOneAndUpdate({id: req.session.admin_id}, {$set: {clientList: newList}})
+      await user.findOneAndUpdate({id: admin_id}, {$set: {clientList: newList}})
       res.send({
         status: 1,
         message: '删除成功'
@@ -107,7 +108,7 @@ class ClientList extends BaseComponent {
     } else {
       res.send({
         status: 0,
-        message: '删除失败'
+        message: '用户不存在'
       })
     }
   }
@@ -123,7 +124,7 @@ class ClientList extends BaseComponent {
 				return
       }
       if (!this.verifyLogin(req, res)) return
-      const admin_id = req.session.admin_id
+      const admin_id = this.getSessionAdminId(req) //req.session.admin_id
       const userInfo = await user.findOne({id: admin_id}, {_id: 0, rights: 1})
       if (userInfo.rights > 1) {
         res.send({
@@ -160,7 +161,7 @@ class ClientList extends BaseComponent {
       } else {
         res.send({
           status: 0,
-          message: '修改失败'
+          message: '客户不存在'
         })
       }
     })
@@ -187,6 +188,7 @@ class ClientList extends BaseComponent {
         objects: data
       })
     } catch (err) {
+      console.log(err.message, err)
       res.send({
         status: 1,
         limit,
@@ -229,10 +231,7 @@ class ClientList extends BaseComponent {
     })
   }
   getStatus (req, res) {
-    // const admin_id = 3 // 开发环境使用常量
-
-    // 生产环境使用
-    const admin_id = req.session.admin_id
+    const admin_id = this.getSessionAdminId(req) //req.session.admin_id
     if (!this.verifyLogin(req, res)) return false
     const query = req.query
     const limit = parseInt(query.limit) || 5
