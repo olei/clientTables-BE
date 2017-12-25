@@ -4,7 +4,7 @@
   "description": "nodejs mongodb",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ADMIN_ID=3 supervisor index.js",
+    "dev": "cross-env NODE_ENV=development ADMIN_ID=1 supervisor index.js",
     "dev-fe": "cross-env NODE_ENV=devfe supervisor index.js",
     "start": "pm2 start index.js -i 2 --name 'nodeStudy'"
   },

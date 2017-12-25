@@ -27,7 +27,7 @@ class ClientList extends BaseComponent {
 				return
       }
       if (!this.verifyLogin(req, res)) return
-      const {name, phone, idCard} = fields
+      const {name, phone, idCard, remarks} = fields
       try {
 				if (!name) {
 					throw new Error('客户姓名参数错误')
@@ -64,6 +64,7 @@ class ClientList extends BaseComponent {
           tPhone: `${phone.slice(0, 3)}****${phone.slice(-4)}`,
           id: client_id,
           gender: (idCard.slice(-2,-1)%2 ? 1 : 0),
+          remarks,
           create_time: dtime().format('YYYY-MM-DD HH:mm')
         }
         const admin_id = this.getSessionAdminId(req) //req.session.admin_id
@@ -134,7 +135,7 @@ class ClientList extends BaseComponent {
         })
         return
       }
-      const {name, phone, idCard} = fields
+      const {name, phone, idCard, remarks} = fields
       try {
 				if (!name) {
 					throw new Error('客户姓名参数错误')
@@ -153,11 +154,11 @@ class ClientList extends BaseComponent {
       }
       const tIdCard = `${idCard.slice(0, -4)}****`
       const tPhone = `${phone.slice(0, 3)}****${phone.slice(-4)}`
-      const clientInfo = await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard, tIdCard, tPhone}})
+      const clientInfo = await clientListModel.findOneAndUpdate({id: client_id}, {$set: {name, phone, idCard, tIdCard, tPhone, remarks, age: new Date().getFullYear() - parseInt(idCard.slice(6,10)), gender: (idCard.slice(-2,-1)%2 ? 1 : 0)}})
       if (clientInfo) {
         res.send({
           status: 1,
-          message: 'ok'
+          message: '修改成功'
         })
       } else {
         res.send({
@@ -170,7 +171,7 @@ class ClientList extends BaseComponent {
   async getClient (req, res, next) {
     const client_id = req.params.client_id
     if (!this.verifyLogin(req, res)) return
-    const clientInfo = await clientListModel.findOne({id: client_id}, {_id: 0, name: 1, age: 1, id: 1, gender: 1, create_time: 1, tPhone: 1, tIdCard: 1})
+    const clientInfo = await clientListModel.findOne({id: client_id}, {_id: 0, name: 1, remarks: 1,  age: 1, id: 1, gender: 1, create_time: 1, phone: 1, idCard: 1, create_time: 1})
     res.send({
       status: 1,
       data: clientInfo
@@ -190,7 +191,7 @@ class ClientList extends BaseComponent {
     }
     try {
       const newList = userInfo.clientList
-      const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, id: 1, create_time: 1, gender: 1, tIdCard:1, tPhone: 1, _id: 0}).limit(limit).skip(offset)
+      const data = await clientListModel.find({$or: newList.map(i => ({id: i}))}, {name: 1, age: 1, id: 1, create_time: 1, gender: 1, tIdCard:1, tPhone: 1, _id: 0}).limit(limit).skip(offset).sort({_id: -1})
       res.send({
         status: 1,
         limit,
