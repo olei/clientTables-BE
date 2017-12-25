@@ -233,7 +233,7 @@ class ClientList extends BaseComponent {
     const opt = {}
     opt.$or = newList.map(i => ({id: i}))
     opt[key] = query.key
-    const data = await clientListModel.find(opt, {name: 1, age: 1, idCard: 1, phone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
+    const data = await clientListModel.find(opt, {name: 1, age: 1, tIdCard: 1, tPhone: 1, id: 1, create_time: 1, gender: 1, _id: 0}).limit(limit).skip(offset)
     res.send({
       status: 1,
       limit,
