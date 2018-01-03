@@ -1,7 +1,7 @@
 'use strict'
 
 export default {
-	port: 8088,
+	port: 3000,
 	url: 'mongodb://root:123456@localhost:27017/admin',
 	session: {
 		name: 'SID',
