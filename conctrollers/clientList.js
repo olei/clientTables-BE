@@ -17,6 +17,26 @@ class ClientList extends BaseComponent {
     this.getClient = this.getClient.bind(this)
   }
   async createClient (req, res, next) {
+    // test string 拼接
+    // let body = ''
+    // req.on('data', chunk => {
+    //   body += chunk
+    // })
+    // req.on('end',function(){
+    //   console.log(body, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<==================')
+    // })
+
+    // test buffer concat
+    // let postData = [], len = 0
+    // req.on('data', chunk => {
+    //   postData.push(chunk)
+    //   len += chunk.length
+    // })
+    // req.on('end',function(){
+    //   const bb = Buffer.concat(postData, len).toString()
+    //   console.log('===========>>>>>>>>>>>>>>>>>>', bb)
+    // })
+   
     const form = new formidable.IncomingForm()
     form.parse(req, async (err, fields, files) => {
       if (err) {
