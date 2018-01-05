@@ -17,7 +17,7 @@
 
 //   console.time(`write ${base} buffer`)
 //   let bufstr = new Buffer.alloc(base)
-//   for(; j<base; j++){
+//   for(; j < base; j++){
 //     const x = j + ''
 //     bufstr.write(x, j)
 //   }
