@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development ADMIN_ID=3 supervisor index.js",
     "dev-fe": "cross-env NODE_ENV=devfe supervisor index.js",
-    "start": "pm2 start index.js -i 2 --name 'nodeStudy'"
+    "start": "pm2 start index.js -i 1 --name 'nodeStudy'"
   },
   "author": "olei",
   "license": "MIT",
