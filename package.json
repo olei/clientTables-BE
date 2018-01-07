@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development ADMIN_ID=3 supervisor index.js",
     "dev-fe": "cross-env NODE_ENV=devfe supervisor index.js",
-    "start": "pm2 start index.js -i 2 --name 'nodeStudy'"
+    "start": "pm2 start index.js -i 1 --name 'nodeStudy'"
   },
   "author": "olei",
   "license": "MIT",
@@ -39,8 +39,10 @@
     "mongodb": "^2.2.25",
     "mongoose": "^4.13.7",
     "node-fetch": "^1.6.3",
+    "node-xlsx": "^0.11.2",
     "pinyin": "^2.8.3",
     "pm2": "^2.8.0",
+    "pnglib": "0.0.1",
     "qiniu": "^6.1.13",
     "querystring": "^0.2.0",
     "sha1": "^1.1.1",

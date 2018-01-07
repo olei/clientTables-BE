@@ -2,6 +2,7 @@ import index from '../conctrollers/index'
 import user from '../conctrollers/user'
 import clientList from '../conctrollers/clientList'
 import captchas from '../conctrollers/captchas'
+import importTable from '../conctrollers/importTable'
 
 export default app => {
   app.get('/', index)
@@ -19,4 +20,7 @@ export default app => {
   app.put('/clients/:client_id', clientList.editorClient)
   app.delete('/client/:client_id', clientList.delClient)
   app.get('/search', clientList.searchClient)
+
+  app.get('/test', importTable.test)
+  app.post('/fileTest', importTable.fileTest)
 }
