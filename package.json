@@ -4,7 +4,7 @@
   "description": "nodejs mongodb",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development ADMIN_ID=3 supervisor index.js",
+    "dev": "cross-env NODE_ENV=development ADMIN_ID=1 supervisor index.js",
     "dev-fe": "cross-env NODE_ENV=devfe supervisor index.js",
     "start": "pm2 start index.js -i 1 --name 'nodeStudy'"
   },
@@ -16,7 +16,7 @@
     "babel-core": "^6.24.0",
     "babel-preset-es2015": "^6.24.0",
     "babel-preset-stage-3": "^6.24.1",
-    "babel-register": "^6.24.0",
+    "babel-register": "^6.26.0",
     "bluebird": "^3.5.1",
     "captchapng": "0.0.1",
     "chalk": "^2.3.0",
